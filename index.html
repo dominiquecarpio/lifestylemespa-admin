@@ -1076,10 +1076,15 @@
     <span class="logo-sub">Admin Dashboard</span>
   </div>
   <nav class="sidebar-nav">
-    <a class="nav-item active" onclick="return false">
+    <a class="nav-item active" id="navConsultations" onclick="switchTab('consultations')">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1"/><rect x="8" y="1" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1"/><rect x="1" y="8" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1"/><rect x="8" y="8" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1"/></svg>
       Consultations
       <span class="nav-badge" id="sidebarBadge">—</span>
+    </a>
+    <a class="nav-item" id="navChatInbox" onclick="switchTab('chat')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1C3.69 1 1 3.46 1 6.5c0 1.58.67 3.01 1.76 4.04L2 13l2.64-1.06A6.3 6.3 0 0 0 7 12c3.31 0 6-2.46 6-5.5S10.31 1 7 1z" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/><circle cx="5" cy="6.5" r=".8" fill="currentColor"/><circle cx="7" cy="6.5" r=".8" fill="currentColor"/><circle cx="9" cy="6.5" r=".8" fill="currentColor"/></svg>
+      Chat Inbox
+      <span class="nav-badge" id="chatInboxBadge" style="display:none;">0</span>
     </a>
   </nav>
   <div class="sidebar-footer">
@@ -1226,7 +1231,96 @@
   </div>
 </main>
 
-<!-- ══ DETAIL DRAWER ══ -->
+<!-- ══ CHAT INBOX PANEL ══ -->
+<main class="main" id="chatInboxPanel" style="display:none;">
+  <div class="topbar">
+    <span class="topbar-title">Chat Inbox</span>
+    <div class="topbar-actions">
+      <button class="btn-refresh" onclick="loadChatSessions()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M11 2v3H8M1 10V7h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.5 4.5A4.5 4.5 0 0 1 9.5 3M10.5 7.5A4.5 4.5 0 0 1 2.5 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:320px 1fr;height:calc(100vh - 64px);overflow:hidden;">
+
+    <!-- Sessions list -->
+    <div style="border-right:1px solid var(--border);overflow-y:auto;background:var(--surface1);">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);">
+        <input type="text" id="chatSearchInput" placeholder="Search conversations…"
+          oninput="filterChatSessions()"
+          style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:2px;color:var(--text);font-family:'Jost',sans-serif;font-size:12px;padding:8px 12px;outline:none;">
+      </div>
+      <div id="chatSessionList" style="padding:8px 0;">
+        <div style="padding:40px 20px;text-align:center;color:var(--text-dim);font-size:12px;letter-spacing:.5px;">Loading conversations…</div>
+      </div>
+    </div>
+
+    <!-- Conversation thread -->
+    <div style="display:flex;flex-direction:column;background:var(--surface2);overflow:hidden;" id="chatThreadPane">
+      <div id="chatThreadEmpty" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-dim);">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" style="margin-bottom:16px;opacity:.3"><path d="M20 4C11.16 4 4 10.82 4 19c0 4.38 1.87 8.34 4.87 11.2L8 36l6-2.4A16.3 16.3 0 0 0 20 34c8.84 0 16-6.82 16-15S28.84 4 20 4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="14" cy="19" r="2" fill="currentColor"/><circle cx="20" cy="19" r="2" fill="currentColor"/><circle cx="26" cy="19" r="2" fill="currentColor"/></svg>
+        <div style="font-family:'Jost',sans-serif;font-size:12px;letter-spacing:.5px;">Select a conversation</div>
+      </div>
+
+      <div id="chatThreadActive" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+        <!-- Thread header -->
+        <div id="chatThreadHeader" style="padding:16px 24px;border-bottom:1px solid var(--border);background:var(--surface1);display:flex;align-items:center;gap:12px;flex-shrink:0;">
+          <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,rgba(201,169,110,.3),rgba(201,169,110,.1));border:1px solid rgba(201,169,110,.25);display:flex;align-items:center;justify-content:center;font-family:'Jost',sans-serif;font-size:14px;color:var(--gold);flex-shrink:0;" id="chatThreadAvatar">?</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-family:'Jost',sans-serif;font-size:13px;color:var(--text);" id="chatThreadName">Visitor</div>
+            <div style="font-size:10px;color:var(--text-dim);font-family:'Jost',sans-serif;margin-top:2px;" id="chatThreadMeta"></div>
+          </div>
+          <div id="chatThreadStatus" style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:20px;border:1px solid rgba(201,169,110,.3);color:var(--gold);font-family:'Jost',sans-serif;">Active</div>
+        </div>
+
+        <!-- Messages -->
+        <div id="chatThreadMessages" style="flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:10px;"></div>
+
+        <!-- Admin reply box -->
+        <div style="padding:16px 24px;border-top:1px solid var(--border);background:var(--surface1);flex-shrink:0;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M11 6H1M7 2l4 4-4 4" stroke="var(--gold)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="font-family:'Jost',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);">Reply as Katarzyna</span>
+            <button onclick="generateChatAISuggestion()" id="chatAiBtn"
+              style="margin-left:auto;padding:4px 12px;background:rgba(201,169,110,.08);border:1px solid rgba(201,169,110,.25);color:var(--gold);font-family:'Jost',sans-serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .2s;">
+              ✦ AI Suggest
+            </button>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end;">
+            <textarea id="adminChatReply" rows="2"
+              style="flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:2px;color:var(--text);font-family:'Jost',sans-serif;font-size:12px;padding:10px 12px;resize:none;outline:none;line-height:1.6;transition:border-color .2s;"
+              placeholder="Type a personal reply to this visitor…"
+              onfocus="this.style.borderColor='rgba(201,169,110,.4)'"
+              onblur="this.style.borderColor='var(--border)'"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAdminChatReply();}"></textarea>
+            <button onclick="sendAdminChatReply()"
+              style="padding:10px 18px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;color:#000;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .2s;height:fit-content;white-space:nowrap;">
+              Send
+            </button>
+          </div>
+          <div id="chatAiSuggestionBox" style="display:none;margin-top:10px;padding:10px 12px;background:rgba(201,169,110,.06);border:1px solid rgba(201,169,110,.2);border-radius:2px;">
+            <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;font-family:'Jost',sans-serif;">AI Suggestion</div>
+            <div id="chatAiSuggestionText" style="font-size:12px;color:rgba(255,255,255,.75);line-height:1.65;font-family:'Jost',sans-serif;"></div>
+            <div style="display:flex;gap:6px;margin-top:8px;">
+              <button onclick="useChatAISuggestion()"
+                style="padding:4px 12px;background:rgba(201,169,110,.15);border:1px solid rgba(201,169,110,.35);color:var(--gold);font-family:'Jost',sans-serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:2px;">
+                Use This
+              </button>
+              <button onclick="document.getElementById('chatAiSuggestionBox').style.display='none'"
+                style="padding:4px 12px;background:none;border:1px solid var(--border);color:var(--text-dim);font-family:'Jost',sans-serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:2px;">
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
 <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer(event)">
   <div class="drawer" id="drawer">
     <div class="drawer-header">
@@ -1340,13 +1434,45 @@
         </div>
       </div>
 
+      <div class="drawer-section" id="dAiSection" style="margin-top:8px;">
+        <div class="drawer-section-label" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>AI Response Suggestions</span>
+          <span style="font-size:9px;letter-spacing:1px;color:var(--gold);opacity:.7;font-family:'Jost',sans-serif;">POWERED BY AI</span>
+        </div>
+        <div id="aiSuggestionArea" style="margin-top:10px;">
+          <button onclick="generateAISuggestions()" id="aiGenBtn"
+            style="width:100%;padding:10px;background:rgba(201,169,110,.08);border:1px solid rgba(201,169,110,.25);color:var(--gold);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .2s;">
+            ✦ Generate AI Reply Suggestions
+          </button>
+          <div id="aiSuggestions" style="display:none;margin-top:12px;display:flex;flex-direction:column;gap:8px;"></div>
+        </div>
+      </div>
+
+      <div class="drawer-section" id="dReplySection" style="margin-top:8px;">
+        <div class="drawer-section-label">Admin Reply</div>
+        <div style="margin-top:8px;">
+          <textarea id="adminReplyText"
+            style="width:100%;min-height:100px;background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.2);border-radius:2px;color:rgba(255,255,255,.85);font-family:'Jost',sans-serif;font-size:12px;line-height:1.7;padding:10px 12px;resize:vertical;outline:none;transition:border-color .2s;"
+            placeholder="Type your reply to the client, or use an AI suggestion above…"
+            onfocus="this.style.borderColor='rgba(201,169,110,.5)'"
+            onblur="this.style.borderColor='rgba(201,169,110,.2)'"></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button onclick="sendAdminReply()" 
+              style="flex:1;padding:10px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;color:#000;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .2s;">
+              ✉ Send via Email
+            </button>
+            <button onclick="copyReplyToClipboard()"
+              style="padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(201,169,110,.25);color:var(--gold);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:1.5px;cursor:pointer;border-radius:2px;transition:all .2s;">
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="drawer-footer">
       <button class="btn-full" onclick="saveDrawerRecord()" style="margin-bottom:8px;">
         💾 Save Changes
-      </button>
-      <button class="btn-full" onclick="openEmailClient()">
-        ✉ Send Email to Client
       </button>
     </div>
   </div>
@@ -2010,11 +2136,454 @@
     return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
   }
 
+  // ── Tab switching ─────────────────────────────────────────
+  function switchTab(tab) {
+    const consultMain   = document.querySelector('main:not(#chatInboxPanel)');
+    const chatMain      = document.getElementById('chatInboxPanel');
+    const navC          = document.getElementById('navConsultations');
+    const navChat       = document.getElementById('navChatInbox');
+
+    if (tab === 'consultations') {
+      consultMain.style.display = '';
+      chatMain.style.display = 'none';
+      navC.classList.add('active');
+      navChat.classList.remove('active');
+    } else {
+      consultMain.style.display = 'none';
+      chatMain.style.display = '';
+      navC.classList.remove('active');
+      navChat.classList.add('active');
+      loadChatSessions();
+    }
+  }
+
+  // ── Chat Inbox state ──────────────────────────────────────
+  let allChatSessions = [];
+  let activeSessionId = null;
+  let chatPollInterval = null;
+
+  // ── Load all chat sessions ────────────────────────────────
+  async function loadChatSessions() {
+    if (!configured || !_supabase) {
+      document.getElementById('chatSessionList').innerHTML =
+        '<div style="padding:20px;color:var(--text-dim);font-size:11px;text-align:center;">Supabase not configured.<br>Run the SQL setup to enable chat inbox.</div>';
+      return;
+    }
+    try {
+      const { data, error } = await _supabase
+        .from('chat_messages')
+        .select('session_id, role, content, visitor_name, created_at, read_by_admin')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Group by session
+      const sessionsMap = {};
+      (data || []).forEach(msg => {
+        const sid = msg.session_id;
+        if (!sessionsMap[sid]) {
+          sessionsMap[sid] = {
+            session_id: sid,
+            visitor_name: msg.visitor_name || null,
+            messages: [],
+            last_at: msg.created_at,
+            unread: 0
+          };
+        }
+        sessionsMap[sid].messages.push(msg);
+        if (msg.role === 'user' && !msg.read_by_admin) sessionsMap[sid].unread++;
+        if (msg.created_at > sessionsMap[sid].last_at) sessionsMap[sid].last_at = msg.created_at;
+        if (msg.visitor_name && !sessionsMap[sid].visitor_name) sessionsMap[sid].visitor_name = msg.visitor_name;
+      });
+
+      allChatSessions = Object.values(sessionsMap).sort((a, b) => b.last_at.localeCompare(a.last_at));
+      renderChatSessions(allChatSessions);
+
+      const totalUnread = allChatSessions.reduce((n, s) => n + s.unread, 0);
+      const badge = document.getElementById('chatInboxBadge');
+      if (totalUnread > 0) { badge.textContent = totalUnread; badge.style.display = 'flex'; }
+      else { badge.style.display = 'none'; }
+
+    } catch(e) {
+      document.getElementById('chatSessionList').innerHTML =
+        `<div style="padding:20px;color:var(--red);font-size:11px;text-align:center;">Error loading chats.<br>${esc(e.message)}</div>`;
+    }
+  }
+
+  function renderChatSessions(sessions) {
+    const list = document.getElementById('chatSessionList');
+    if (!sessions.length) {
+      list.innerHTML = '<div style="padding:40px 20px;text-align:center;color:var(--text-dim);font-size:11px;letter-spacing:.5px;">No conversations yet.</div>';
+      return;
+    }
+    list.innerHTML = sessions.map(s => {
+      const lastMsg = [...s.messages].sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
+      const name = s.visitor_name || 'Visitor';
+      const initial = name.charAt(0).toUpperCase();
+      const preview = lastMsg ? lastMsg.content.substring(0, 60) + (lastMsg.content.length > 60 ? '…' : '') : '';
+      const time = lastMsg ? new Date(lastMsg.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+      const isActive = s.session_id === activeSessionId;
+      const unreadDot = s.unread > 0 ? `<span style="width:8px;height:8px;border-radius:50%;background:var(--gold);display:inline-block;flex-shrink:0;"></span>` : '';
+
+      return `<div onclick="openChatSession('${s.session_id}')"
+        style="padding:12px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;display:flex;gap:10px;align-items:flex-start;
+               ${isActive ? 'background:rgba(201,169,110,.08);border-left:2px solid var(--gold);' : 'border-left:2px solid transparent;'}">
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(201,169,110,.3),rgba(201,169,110,.1));border:1px solid rgba(201,169,110,.25);display:flex;align-items:center;justify-content:center;font-family:'Jost',sans-serif;font-size:12px;color:var(--gold);flex-shrink:0;">${initial}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:4px;">
+            <div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text);font-weight:${s.unread > 0 ? '500' : '400'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(name)} ${unreadDot}</div>
+            <div style="font-size:10px;color:var(--text-dim);white-space:nowrap;flex-shrink:0;">${time}</div>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.4;">${esc(preview)}</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">${s.messages.length} message${s.messages.length !== 1 ? 's' : ''}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function filterChatSessions() {
+    const q = document.getElementById('chatSearchInput').value.toLowerCase();
+    const filtered = allChatSessions.filter(s =>
+      (s.visitor_name || '').toLowerCase().includes(q) ||
+      s.messages.some(m => m.content.toLowerCase().includes(q))
+    );
+    renderChatSessions(filtered);
+  }
+
+  async function openChatSession(sessionId) {
+    activeSessionId = sessionId;
+    const session = allChatSessions.find(s => s.session_id === sessionId);
+    if (!session) return;
+
+    // Mark as read
+    if (configured && _supabase && session.unread > 0) {
+      await _supabase.from('chat_messages').update({ read_by_admin: true })
+        .eq('session_id', sessionId).eq('role', 'user');
+      session.unread = 0;
+      renderChatSessions(allChatSessions);
+    }
+
+    const name = session.visitor_name || 'Visitor';
+    document.getElementById('chatThreadAvatar').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('chatThreadName').textContent = name;
+    document.getElementById('chatThreadMeta').textContent =
+      `Session: ${sessionId.substring(0, 8)}… · ${session.messages.length} messages`;
+
+    document.getElementById('chatThreadEmpty').style.display = 'none';
+    document.getElementById('chatThreadActive').style.display = 'flex';
+
+    renderChatThread(session.messages);
+
+    // Clear reply area
+    document.getElementById('adminChatReply').value = '';
+    document.getElementById('chatAiSuggestionBox').style.display = 'none';
+
+    // Start polling for new messages in this session
+    if (chatPollInterval) clearInterval(chatPollInterval);
+    chatPollInterval = setInterval(() => refreshActiveSession(sessionId), 15000);
+  }
+
+  async function refreshActiveSession(sessionId) {
+    if (!configured || !_supabase || activeSessionId !== sessionId) return;
+    try {
+      const { data } = await _supabase
+        .from('chat_messages')
+        .select('*')
+        .eq('session_id', sessionId)
+        .order('created_at', { ascending: true });
+
+      if (data) {
+        const session = allChatSessions.find(s => s.session_id === sessionId);
+        if (session && data.length > session.messages.length) {
+          session.messages = data;
+          renderChatThread(data);
+        }
+      }
+    } catch(e) {}
+  }
+
+  function renderChatThread(messages) {
+    const container = document.getElementById('chatThreadMessages');
+    const sorted = [...messages].sort((a, b) => a.created_at.localeCompare(b.created_at));
+
+    container.innerHTML = sorted.map(msg => {
+      const isUser = msg.role === 'user';
+      const isAdmin = msg.role === 'admin';
+      const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const date = new Date(msg.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+      if (isUser) {
+        return `<div style="display:flex;gap:8px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(255,255,255,.5);flex-shrink:0;margin-top:2px;">👤</div>
+          <div>
+            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:0 4px 4px 4px;padding:8px 12px;font-family:'Jost',sans-serif;font-size:12px;color:rgba(255,255,255,.85);line-height:1.6;max-width:400px;">${esc(msg.content)}</div>
+            <div style="font-size:10px;color:var(--text-dim);margin-top:3px;font-family:'Jost',sans-serif;">${date} · ${time}</div>
+          </div>
+        </div>`;
+      } else if (isAdmin) {
+        return `<div style="display:flex;gap:8px;align-items:flex-start;flex-direction:row-reverse;">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,rgba(201,169,110,.5),rgba(201,169,110,.2));border:1px solid rgba(201,169,110,.5);display:flex;align-items:center;justify-content:center;font-family:'Jost',sans-serif;font-size:12px;color:var(--gold);flex-shrink:0;margin-top:2px;">K</div>
+          <div style="text-align:right;">
+            <div style="font-size:9px;letter-spacing:1px;color:var(--gold);margin-bottom:3px;font-family:'Jost',sans-serif;text-transform:uppercase;">Katarzyna</div>
+            <div style="background:rgba(201,169,110,.08);border:1px solid rgba(201,169,110,.3);border-radius:4px 0 4px 4px;padding:8px 12px;font-family:'Jost',sans-serif;font-size:12px;color:rgba(255,255,255,.85);line-height:1.6;max-width:400px;text-align:left;">${esc(msg.content)}</div>
+            <div style="font-size:10px;color:var(--text-dim);margin-top:3px;font-family:'Jost',sans-serif;">${date} · ${time}</div>
+          </div>
+        </div>`;
+      } else {
+        // AI/assistant message
+        return `<div style="display:flex;gap:8px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,rgba(154,122,74,.3),rgba(201,169,110,.15));border:1px solid rgba(201,169,110,.2);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--gold);flex-shrink:0;margin-top:2px;">✦</div>
+          <div>
+            <div style="font-size:9px;letter-spacing:1px;color:rgba(201,169,110,.6);margin-bottom:3px;font-family:'Jost',sans-serif;text-transform:uppercase;">AI Assistant</div>
+            <div style="background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.12);border-radius:0 4px 4px 4px;padding:8px 12px;font-family:'Jost',sans-serif;font-size:12px;color:rgba(255,255,255,.75);line-height:1.6;max-width:400px;">${esc(msg.content)}</div>
+            <div style="font-size:10px;color:var(--text-dim);margin-top:3px;font-family:'Jost',sans-serif;">${date} · ${time}</div>
+          </div>
+        </div>`;
+      }
+    }).join('');
+
+    container.scrollTop = container.scrollHeight;
+  }
+
+  async function sendAdminChatReply() {
+    const text = document.getElementById('adminChatReply').value.trim();
+    if (!text || !activeSessionId) return;
+    if (!configured || !_supabase) { showToast('Supabase not configured.', true); return; }
+
+    try {
+      const { error } = await _supabase.from('chat_messages').insert([{
+        session_id: activeSessionId,
+        role: 'admin',
+        content: text,
+        visitor_name: null,
+        read_by_client: false,
+        read_by_admin: true,
+        created_at: new Date().toISOString()
+      }]);
+      if (error) throw error;
+
+      document.getElementById('adminChatReply').value = '';
+      document.getElementById('chatAiSuggestionBox').style.display = 'none';
+      showToast('Reply sent to visitor.');
+
+      // Refresh the thread
+      await refreshActiveSession(activeSessionId);
+
+      // Also refresh session list
+      const session = allChatSessions.find(s => s.session_id === activeSessionId);
+      if (session) renderChatSessions(allChatSessions);
+
+    } catch(e) {
+      showToast('Could not send reply: ' + e.message, true);
+    }
+  }
+
+  // AI suggestion for admin chat reply
+  const CHAT_REPLY_SYSTEM = `You are helping Katarzyna Marcinec (founder of Lifestyle Medical Spa) craft a warm, personal, and professional reply to a website visitor who messaged through the chat widget.
+
+Write a single, concise reply (2–4 sentences) that:
+- Addresses the visitor warmly and personally if their name is known
+- Directly responds to their last question or message
+- Reflects Katarzyna's expert, caring, artistic approach to aesthetic medicine
+- Ends with a soft invitation to book a consultation or call (313) 330-9999
+
+Do NOT include a subject line. Output only the reply message text, nothing else.`;
+
+  async function generateChatAISuggestion() {
+    if (!activeSessionId) return;
+    const session = allChatSessions.find(s => s.session_id === activeSessionId);
+    if (!session) return;
+
+    const btn = document.getElementById('chatAiBtn');
+    btn.textContent = '⟳ Generating…';
+    btn.disabled = true;
+
+    const history = [...session.messages]
+      .sort((a, b) => a.created_at.localeCompare(b.created_at))
+      .slice(-8) // last 8 messages for context
+      .map(m => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.content
+      }));
+
+    const visitorName = session.visitor_name || 'the visitor';
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          system: CHAT_REPLY_SYSTEM,
+          messages: [
+            ...history,
+            { role: 'user', content: `Generate a warm personal reply from Katarzyna to ${visitorName} based on the conversation above.` }
+          ]
+        })
+      });
+      const data = await res.json();
+      const text = (data.content || []).find(b => b.type === 'text')?.text || '';
+      if (text) {
+        document.getElementById('chatAiSuggestionText').textContent = text;
+        document.getElementById('chatAiSuggestionBox').style.display = 'block';
+        document.getElementById('chatAiSuggestionBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    } catch(e) {
+      showToast('Could not generate suggestion.', true);
+    } finally {
+      btn.textContent = '✦ AI Suggest';
+      btn.disabled = false;
+    }
+  }
+
+  function useChatAISuggestion() {
+    const text = document.getElementById('chatAiSuggestionText').textContent;
+    document.getElementById('adminChatReply').value = text;
+    document.getElementById('chatAiSuggestionBox').style.display = 'none';
+    document.getElementById('adminChatReply').focus();
+  }
+
   // Keyboard shortcuts
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeDrawer();
     if (e.key === 'Enter' && document.getElementById('loginOverlay').style.display !== 'none') doLogin();
   });
+
+  // ── AI Suggestion System ──────────────────────────────────
+
+  const AI_ADMIN_SYSTEM = `You are an expert assistant helping Katarzyna Marcinec (lead practitioner and founder of Lifestyle Medical Spa) craft professional, warm, and precise client reply emails.
+
+Lifestyle Medical Spa is a luxury European-standard aesthetic medicine practice in the Detroit Metro Area. The tone is refined, personal, and professional — never generic. Katarzyna is a correction specialist, educator, trainer, and deeply passionate artist in her craft.
+
+When given a client consultation request, generate 3 distinctly different reply options:
+1. A warm confirmation reply (assumes the appointment can be confirmed)
+2. A thoughtful scheduling reply (asks to confirm or adjust timing)
+3. A personalized welcome reply (focuses on the treatment and Katarzyna's expertise)
+
+Return ONLY valid JSON — no markdown, no preamble. Format:
+{
+  "suggestions": [
+    { "label": "Warm Confirmation", "subject": "...", "body": "..." },
+    { "label": "Schedule Coordination", "subject": "...", "body": "..." },
+    { "label": "Personalized Welcome", "subject": "...", "body": "..." }
+  ]
+}
+
+In each body: address client by first name, reference their specific treatment, mention Katarzyna by name, include the spa phone (313) 330-9999, and sign as "Katarzyna Marcinec / Lifestyle Medical Spa". Keep bodies to 3–5 paragraphs maximum.`;
+
+  async function generateAISuggestions() {
+    if (!activeRecord) return;
+    const r = activeRecord;
+    const btn = document.getElementById('aiGenBtn');
+    const area = document.getElementById('aiSuggestions');
+    btn.textContent = '⟳ Generating suggestions…';
+    btn.disabled = true;
+    area.style.display = 'none';
+
+    const prompt = `Client consultation request details:
+- Name: ${r.first_name} ${r.last_name || ''}
+- Email: ${r.email || 'N/A'}
+- Treatment: ${r.treatment || 'Not specified'}
+- Preferred Date: ${r.preferred_date || 'Not specified'}
+- Preferred Time: ${r.preferred_time || 'Not specified'}
+- Referral Source: ${r.referral || 'Not specified'}
+- Message from client: "${r.message || 'No additional message.'}"
+- Current Status: ${r.status || 'pending'}
+
+Generate 3 professional email reply options for Katarzyna to send to this client.`;
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          system: AI_ADMIN_SYSTEM,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+      const data = await res.json();
+      const text = (data.content || []).find(b => b.type === 'text')?.text || '';
+      const clean = text.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(clean);
+      renderAISuggestions(parsed.suggestions || []);
+    } catch(e) {
+      area.style.display = 'flex';
+      area.innerHTML = `<div style="color:rgba(255,255,255,.4);font-size:11px;padding:8px;">Could not generate suggestions. Check your network connection.</div>`;
+    } finally {
+      btn.textContent = '↺ Regenerate Suggestions';
+      btn.disabled = false;
+    }
+  }
+
+  function renderAISuggestions(suggestions) {
+    const area = document.getElementById('aiSuggestions');
+    area.style.display = 'flex';
+    area.innerHTML = suggestions.map((s, i) => `
+      <div style="border:1px solid rgba(201,169,110,.2);border-radius:2px;overflow:hidden;">
+        <div style="padding:8px 12px;background:rgba(201,169,110,.06);border-bottom:1px solid rgba(201,169,110,.12);display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-family:'Jost',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);">${esc(s.label)}</span>
+          <button onclick="useSuggestion(${i})" 
+            style="padding:3px 10px;background:rgba(201,169,110,.12);border:1px solid rgba(201,169,110,.3);color:var(--gold);font-family:'Jost',sans-serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .2s;">
+            Use This
+          </button>
+        </div>
+        <div style="padding:10px 12px;">
+          <div style="font-size:10px;color:rgba(255,255,255,.4);font-family:'Jost',sans-serif;margin-bottom:4px;">Subject: ${esc(s.subject)}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.65);line-height:1.6;max-height:80px;overflow:hidden;font-family:'Jost',sans-serif;white-space:pre-wrap;">${esc(s.body.substring(0,200))}${s.body.length>200?'…':''}</div>
+        </div>
+      </div>
+    `).join('');
+    window._aiSuggestions = suggestions;
+  }
+
+  function useSuggestion(index) {
+    const s = (window._aiSuggestions || [])[index];
+    if (!s) return;
+    document.getElementById('adminReplyText').value = `Subject: ${s.subject}\n\n${s.body}`;
+    document.getElementById('dReplySection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    showToast(`Suggestion "${s.label}" loaded into reply box.`);
+  }
+
+  function sendAdminReply() {
+    if (!activeRecord || !activeRecord.email) { showToast('No client email on record.', true); return; }
+    const replyText = document.getElementById('adminReplyText').value.trim();
+    if (!replyText) { showToast('Please write a reply first.', true); return; }
+
+    let subject = `Your Consultation Request – Lifestyle Medical Spa`;
+    let body = replyText;
+
+    // Extract subject line if included
+    const subjectMatch = body.match(/^Subject:\s*(.+)\n\n/i);
+    if (subjectMatch) {
+      subject = subjectMatch[1];
+      body = body.replace(subjectMatch[0], '');
+    }
+
+    const mailto = `mailto:${activeRecord.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailto);
+    showToast('Email client opened with reply.');
+  }
+
+  function copyReplyToClipboard() {
+    const text = document.getElementById('adminReplyText').value.trim();
+    if (!text) { showToast('Nothing to copy.', true); return; }
+    navigator.clipboard.writeText(text).then(() => showToast('Reply copied to clipboard.')).catch(() => showToast('Copy failed.', true));
+  }
+
+  // Reset AI panel when drawer changes
+  const _origOpenDrawer = window.openDrawer;
+  // patch openDrawer to reset AI section
+  const origOpenDrawerFn = openDrawer;
+  window.openDrawer = function(id) {
+    origOpenDrawerFn(id);
+    document.getElementById('aiSuggestions').style.display = 'none';
+    document.getElementById('adminReplyText').value = '';
+    const btn = document.getElementById('aiGenBtn');
+    if (btn) { btn.textContent = '✦ Generate AI Reply Suggestions'; btn.disabled = false; }
+  };
 </script>
 </body>
 </html>

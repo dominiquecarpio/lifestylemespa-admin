@@ -130,13 +130,15 @@ nav.s {
 
 .logo {
   font-family: var(--serif);
-  font-size: 1.65rem;
+  font-size: 1.80rem;
   color: white;
   text-decoration: none;
   letter-spacing: .03em;
   transition: color .4s;
   display: flex;
   align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .logo em {
@@ -155,24 +157,28 @@ nav.s .logo em {
 .nav-r {
   display: flex;
   align-items: center;
-  gap: 3rem
+  gap: 3rem;
+  flex-shrink: 0;
 }
 
 .nav-links {
   display: flex;
-  gap: 2.5rem;
+  gap: 1.3rem;
   list-style: none;
-  font-size: .80rem;
+  font-size: .90rem;
   letter-spacing: .22em;
   text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nav-links a {
-  color: rgba(255, 255, 255, .65);
+  color: rgb(255, 255, 255);
   text-decoration: none;
   transition: color .3s;
   position: relative;
   padding-bottom: 4px;
+  white-space: nowrap;
 }
 
 .nav-links a::after {
@@ -192,7 +198,7 @@ nav.s .logo em {
 
 .nav-links a:hover,
 nav.s .nav-links a:hover {
-  color: var(--gold)
+  color: var(--gold-light)
 }
 
 nav.s .nav-links a {
@@ -200,7 +206,7 @@ nav.s .nav-links a {
 }
 
 .nav-book {
-  font-size: .65rem;
+  font-size: 1rem;
   letter-spacing: .22em;
   text-transform: uppercase;
   color: var(--ink);
@@ -210,6 +216,8 @@ nav.s .nav-links a {
   text-decoration: none;
   border: 1px solid rgba(158, 125, 71, .25);
   transition: all .35s;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nav-book:hover {
@@ -362,8 +370,8 @@ nav.s .ham span {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 48% 45%, rgba(10, 6, 2, 0.15) 0%, rgba(10, 6, 2, 0.55) 40%, rgba(10, 6, 2, 0.85) 75%, rgba(10, 6, 2, 0.95) 100%),
-    linear-gradient(135deg, rgba(12, 9, 6, .95) 0%, rgba(12, 9, 6, .7) 45%, rgba(12, 9, 6, .45) 70%, rgba(12, 9, 6, .23) 100%);
+    radial-gradient(circle at 48% 45%, rgba(10, 6, 2, 0.08) 0%, rgba(10, 6, 2, 0.28) 40%, rgba(10, 6, 2, 0.45) 75%, rgba(10, 6, 2, 0.52) 100%),
+    linear-gradient(135deg, rgba(12, 9, 6, .55) 0%, rgba(12, 9, 6, .38) 45%, rgba(12, 9, 6, .22) 70%, rgba(12, 9, 6, .1) 100%);
 }
 
 .hvb-overlay-vignette {
@@ -371,8 +379,8 @@ nav.s .ham span {
   inset: 0;
   background: radial-gradient(ellipse at center,
       transparent 35%,
-      rgba(12, 9, 6, .55) 60%,
-      rgba(12, 9, 6, .82) 100%);
+      rgba(12, 9, 6, .28) 60%,
+      rgba(12, 9, 6, .45) 100%);
 }
 
 .hvb-overlay-scanlines {
@@ -404,8 +412,9 @@ nav.s .ham span {
   max-width: 660px;
 }
 
+
 .hero-tag {
-  font-size: .90rem;
+  font-size: 1rem;
   margin-bottom: 28px;
   display: flex;
   align-items: center;
@@ -463,7 +472,7 @@ nav.s .ham span {
   color: white;
   padding: 15px 36px;
   border-radius: 5px;
-  font-size: 1rem;
+  font-size: 1.0rem;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -483,7 +492,7 @@ nav.s .ham span {
   color: rgba(255, 255, 255, .8);
   padding: 14px 34px;
   border-radius: 5px;
-  font-size: 1rem;
+  font-size: 1.10rem;
   border: rgb(201, 160, 71) solid 0.5px;
   text-decoration: none;
 }
@@ -492,11 +501,10 @@ nav.s .ham span {
   color: rgb(247, 247, 247);
   padding: 14px 34px;
   border-radius: 5px;
-  font-size: 1rem;
+  font-size: 1.10rem;
   transform: translateY(-3px);
 
 }
-
 /* Vertical side label */
 .hero-side-text {
   position: absolute;
@@ -645,7 +653,7 @@ section h2 em {
   color: var(--mid);
   line-height: 1.9;
   margin-bottom: 18px;
-  font-size: 1.05rem;
+  font-size: 1.15rem;
 }
 
 .about-sig {
@@ -669,13 +677,13 @@ section h2 em {
 .about-sig strong {
   display: block;
   font-family: var(--garamond);
-  font-size: 1.05rem;
+  font-size: 1.25rem;
   color: var(--ink);
   font-weight: 500;
 }
 
 .about-sig span {
-  font-size: .7rem;
+  font-size: .9rem;
   color: var(--light);
   letter-spacing: .06em
 }
@@ -738,16 +746,15 @@ section h2 em {
 
 .asb-item strong {
   display: block;
-  font-family: var(--serif);
   font-size: 2rem;
   color: var(--gold-light);
 }
 
 .asb-item span {
-  font-size: .72rem;
+  font-size: .90rem;
   letter-spacing: .15em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, .4)
+  color: rgb(255, 255, 255)
 }
 
 .asb-div {
@@ -773,7 +780,7 @@ section h2 em {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(.6) contrast(1.1);
+  filter: saturate(.6) contrast(1.1) brightness(1.2);
   transition: transform 10s ease;
 }
 
@@ -782,7 +789,7 @@ section h2 em {
 }
 
 .ms-content {
-  background: var(--charcoal);
+  background: var(--mid);
   padding: 80px 70px;
   display: flex;
   flex-direction: column;
@@ -813,16 +820,17 @@ section h2 em {
 
 .ms-pill span {
   display: block;
-  font-size: .90rem;
+  font-size: 1.20rem;
   letter-spacing: .22em;
   text-transform: uppercase;
   color: var(--gold);
   margin-bottom: 8px;
+  font-weight: bold;
 }
 
 .ms-pill p {
-  font-size: 1.02rem;
-  color: rgba(255, 255, 255, .4);
+  font-size: 1.22rem;
+  color: rgba(255, 255, 255, .7);
   line-height: 1.7
 }
 
@@ -892,7 +900,7 @@ section h2 em {
 }
 
 .tcard-num {
-  font-size: .72rem;
+  font-size: .92rem;
   letter-spacing: .3em;
   text-transform: uppercase;
   color: var(--gold);
@@ -901,7 +909,7 @@ section h2 em {
 
 .tcard h3 {
   font-family: var(--garamond);
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   font-weight: 400;
   color: var(--ink);
   margin-bottom: 10px;
@@ -913,7 +921,7 @@ section h2 em {
 }
 
 .tcard p {
-  font-size: 1.08rem;
+  font-size: 1.28rem;
   color: var(--light);
   line-height: 1.8;
   flex: 1
@@ -933,7 +941,7 @@ section h2 em {
 }
 
 .tcard-foot span {
-  font-size: .90rem;
+  font-size: 1rem;
   color: var(--light);
   letter-spacing: .04em
 }
@@ -943,7 +951,6 @@ section h2 em {
 }
 
 .tcard-foot strong {
-  font-family: var(--garamond);
   font-size: 1.3rem;
   color: var(--gold);
 }
@@ -1101,7 +1108,7 @@ img.we-badge-logo {
 
 .pcol-head {
   padding: 26px 32px 22px;
-  font-size: 1.10rem;
+  font-size: 1.30rem;
   color: white;
 }
 
@@ -1123,12 +1130,11 @@ img.we-badge-logo {
 }
 
 .prow span {
-  font-size: 1.08rem;
-  color: rgba(255, 255, 255, .45)
+  font-size: 1.28rem;
+  color: rgba(255, 255, 255, 0.836)
 }
 
 .prow strong {
-  font-family: var(--garamond);
   font-size: 1.32rem;
   color: var(--gold-light);
   font-weight: 400;
@@ -1197,7 +1203,7 @@ img.we-badge-logo {
 }
 
 .meet-text-col p {
-  font-size: 1.18rem;
+  font-size: 1.28rem;
   color: rgba(255, 255, 255, .45);
   line-height: 1.9;
   margin-bottom: 44px
@@ -1217,7 +1223,6 @@ img.we-badge-logo {
 }
 
 .mc-item .mc-num {
-  font-family: var(--serif);
   font-size: 2.2rem;
   color: var(--gold-light);
   display: block;
@@ -1226,7 +1231,7 @@ img.we-badge-logo {
 }
 
 .mc-item div:last-child {
-  font-size: 1rem;
+  font-size: 1.20rem;
   color: rgba(255, 255, 255, .3);
   letter-spacing: .06em;
   line-height: 1.4
@@ -1375,7 +1380,7 @@ img.we-badge-logo {
 }
 
 .cta p {
-  font-size: 1.05rem;
+  font-size: 1.20rem;
   color: rgba(255, 255, 255, .45);
   max-width: 420px;
   margin: 0 auto 52px;
@@ -1429,7 +1434,7 @@ footer {
 
 .f-logo {
   font-family: var(--serif);
-  font-size: 1.55rem;
+  font-size: 1.85rem;
   color: rgba(255, 255, 255, .4);
 }
 
@@ -1445,7 +1450,7 @@ footer {
 }
 
 .f-links a {
-  font-size: .80rem;
+  font-size: 1rem;
   letter-spacing: .18em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, .2);
@@ -1472,7 +1477,8 @@ footer small {
 
 .rev.vis {
   opacity: 1;
-  transform: translateY(0)
+  transform: translateY(0);
+  font-size: 1.08rem;
 }
 
 .d1 {
@@ -1516,7 +1522,66 @@ footer small {
 }
 
 /* ─── RESPONSIVE ─── */
+
+/* ─── NAVBAR RESPONSIVE ADJUSTMENTS ─── */
+@media (max-width: 1400px) {
+  nav {
+    padding: 20px 4vw;
+  }
+
+  .logo {
+    font-size: 1.50rem;
+    gap: 10px;
+  }
+
+  .nav-r {
+    gap: 1.8rem;
+  }
+
+  .nav-links {
+    gap: 1.8rem;
+    font-size: 0.75rem;
+  }
+
+  .nav-book {
+    font-size: 0.80rem;
+    padding: 8px 18px;
+  }
+}
+
 @media (max-width: 1200px) {
+  nav {
+    padding: 18px 3.5vw;
+  }
+
+  nav.s {
+    padding: 14px 3.5vw;
+  }
+
+  .logo {
+    font-size: 1.25rem;
+    gap: 10px;
+  }
+
+  .logo-img {
+    width: 35px !important;
+    height: 35px !important;
+  }
+
+  .nav-r {
+    gap: 1.5rem;
+  }
+
+  .nav-links {
+    gap: 1.3rem;
+    font-size: 0.70rem;
+  }
+
+  .nav-book {
+    font-size: 0.75rem;
+    padding: 7px 16px;
+  }
+
   .treat-grid {
     grid-template-columns: 1fr 1fr
   }
@@ -1527,6 +1592,38 @@ footer small {
 }
 
 @media (max-width: 1024px) {
+
+  nav {
+    padding: 13px 3vw;
+  }
+
+  nav.s {
+    padding: 10px 3vw;
+  }
+
+  .logo {
+    font-size: 1rem;
+    gap: 8px;
+  }
+
+  .logo-img {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .nav-r {
+    gap: 1.2rem;
+  }
+
+  .nav-links {
+    gap: 1rem;
+    font-size: 0.65rem;
+  }
+
+  .nav-book {
+    font-size: 0.70rem;
+    padding: 6px 14px;
+  }
 
   .about,
   .why-euro {
@@ -1578,6 +1675,28 @@ footer small {
 }
 
 @media (max-width: 768px) {
+
+  nav {
+    padding: 10px 2.5vw;
+  }
+
+  nav.s {
+    padding: 8px 2.5vw;
+  }
+
+  .logo {
+    font-size: 1.9rem;
+  }
+
+  .logo-img {
+    width: 55px !important;
+    height: 55px !important;
+    margin-right: 4px;
+  }
+
+  .nav-r {
+    gap: 0.8rem;
+  }
 
   .nav-links,
   .nav-book {
@@ -1789,6 +1908,7 @@ nav.s img.logo-img {
   object-fit: cover;
   opacity: 0;
   transition: opacity 1s ease;
+  filter: brightness(1.2);
 }
 
 .ms-slide.active {
@@ -2278,6 +2398,22 @@ nav.s img.logo-img {
 }
 
 @media (max-width: 600px) {
+  nav {
+    padding: 8px 2vw;
+  }
+
+  nav.s {
+    padding: 6px 2vw;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+  }
+    .logo-img {
+        width: 56px !important;
+        height: 53px !important;
+        margin-right: 3px;
+    }
   .tvm-panel {
     max-height: 100vh;
     border-radius: 0;
@@ -2423,7 +2559,7 @@ nav.s img.logo-img {
 
 .gs-cap-tag {
   display: inline-block;
-  font-size: .68rem;
+  font-size: .88rem;
   letter-spacing: .22em;
   text-transform: uppercase;
   color: var(--gold-light);
@@ -2437,7 +2573,7 @@ nav.s img.logo-img {
 
 .gs-slide-caption p {
   font-family: var(--garamond);
-  font-size: 1.05rem;
+  font-size: 1.25rem;
   font-style: italic;
   color: rgba(255, 255, 255, .75);
   margin: 0;
