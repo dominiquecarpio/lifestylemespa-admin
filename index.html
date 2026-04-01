@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>lifestyle Medical Spa — Admin</title>
+  <title>Finesse Medical Spa — Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cinzel:wght@400;500&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1055,7 +1055,7 @@
       <div class="login-ornament-line r"></div>
     </div>
     <div class="login-logo">
-      <div class="name">lifestyle<em>Medical Spa</em></div>
+      <div class="name">Finesse<em>Medical Spa</em></div>
       <div class="sub">Admin Portal</div>
     </div>
     <div class="login-form">
@@ -1072,7 +1072,7 @@
 <!-- ══ SIDEBAR ══ -->
 <aside class="sidebar">
   <div class="sidebar-logo">
-    <span class="logo-mark">lifestyle <em>Medical Spa</em></span>
+    <span class="logo-mark">Finesse <em>Medical Spa</em></span>
     <span class="logo-sub">Admin Dashboard</span>
   </div>
   <nav class="sidebar-nav">
@@ -1089,7 +1089,7 @@
   </nav>
   <div class="sidebar-footer">
     <div class="admin-name">Administrator</div>
-    <div class="admin-role">lifestyle Medical Spa</div>
+    <div class="admin-role">Finesse Medical Spa</div>
     <button onclick="sessionStorage.removeItem('lms_admin_auth');location.reload()" style="margin-top:12px;background:none;border:1px solid var(--border);color:var(--text-dim);padding:6px 14px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;width:100%;transition:all .2s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">Sign Out</button>
   </div>
 </aside>
@@ -1486,7 +1486,7 @@
 
   const SUPABASE_URL      = 'https://eoczzktmlowyzmappjkr.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvY3p6a3RtbG93eXptYXBwamtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5ODY2MTcsImV4cCI6MjA4OTU2MjYxN30.e_gxOBuzlMSZtSBQuYyfeP0FK-tjpDbeGsMeWgM4dC4';
-  const ADMIN_PASSWORD    = 'lifestyle2026';
+  const ADMIN_PASSWORD    = 'Finesse2026';
 
 
   let _supabase    = null;
@@ -2067,8 +2067,8 @@
   function mailTo(id) {
     const r = allData.find(x => x.id === id);
     if (!r || !r.email) return;
-    const sub  = encodeURIComponent(`Your Consultation Request – lifestyle Medical Spa`);
-    const body = encodeURIComponent(`Dear ${r.first_name},\n\nThank you for reaching out to lifestyle Medical Spa. We have received your consultation request for ${r.treatment||'our services'} on ${formatDate(r.preferred_date)} at ${r.preferred_time||'your preferred time'}.\n\nWe will contact you shortly to confirm your appointment.\n\nWarm regards,\nKatarzyna Marcinec\nlifestyle Medical Spa\n(313) 330-9999`);
+    const sub  = encodeURIComponent(`Your Consultation Request – Finesse Medical Spa`);
+    const body = encodeURIComponent(`Dear ${r.first_name},\n\nThank you for reaching out to Finesse Medical Spa. We have received your consultation request for ${r.treatment||'our services'} on ${formatDate(r.preferred_date)} at ${r.preferred_time||'your preferred time'}.\n\nWe will contact you shortly to confirm your appointment.\n\nWarm regards,\nKatarzyna Marcinec\nFinesse Medical Spa\n(313) 330-9999`);
     window.open(`mailto:${r.email}?subject=${sub}&body=${body}`);
   }
 
@@ -2379,7 +2379,7 @@
   }
 
   // AI suggestion for admin chat reply
-  const CHAT_REPLY_SYSTEM = `You are helping Katarzyna Marcinec (founder of Lifestyle Medical Spa) craft a warm, personal, and professional reply to a website visitor who messaged through the chat widget.
+  const CHAT_REPLY_SYSTEM = `You are helping Katarzyna Marcinec (founder of Finesse Medical Spa) craft a warm, personal, and professional reply to a website visitor who messaged through the chat widget.
 
 Write a single, concise reply (2–4 sentences) that:
 - Addresses the visitor warmly and personally if their name is known
@@ -2452,9 +2452,9 @@ Do NOT include a subject line. Output only the reply message text, nothing else.
 
   // ── AI Suggestion System ──────────────────────────────────
 
-  const AI_ADMIN_SYSTEM = `You are an expert assistant helping Katarzyna Marcinec (lead practitioner and founder of Lifestyle Medical Spa) craft professional, warm, and precise client reply emails.
+  const AI_ADMIN_SYSTEM = `You are an expert assistant helping Katarzyna Marcinec (lead practitioner and founder of Finesse Medical Spa) craft professional, warm, and precise client reply emails.
 
-Lifestyle Medical Spa is a luxury European-standard aesthetic medicine practice in the Detroit Metro Area. The tone is refined, personal, and professional — never generic. Katarzyna is a correction specialist, educator, trainer, and deeply passionate artist in her craft.
+Finesse Medical Spa is a luxury European-standard aesthetic medicine practice in the Detroit Metro Area. The tone is refined, personal, and professional — never generic. Katarzyna is a correction specialist, educator, trainer, and deeply passionate artist in her craft.
 
 When given a client consultation request, generate 3 distinctly different reply options:
 1. A warm confirmation reply (assumes the appointment can be confirmed)
@@ -2470,7 +2470,7 @@ Return ONLY valid JSON — no markdown, no preamble. Format:
   ]
 }
 
-In each body: address client by first name, reference their specific treatment, mention Katarzyna by name, include the spa phone (313) 330-9999, and sign as "Katarzyna Marcinec / Lifestyle Medical Spa". Keep bodies to 3–5 paragraphs maximum.`;
+In each body: address client by first name, reference their specific treatment, mention Katarzyna by name, include the spa phone (313) 330-9999, and sign as "Katarzyna Marcinec / Finesse Medical Spa". Keep bodies to 3–5 paragraphs maximum.`;
 
   async function generateAISuggestions() {
     if (!activeRecord) return;
@@ -2552,7 +2552,7 @@ Generate 3 professional email reply options for Katarzyna to send to this client
     const replyText = document.getElementById('adminReplyText').value.trim();
     if (!replyText) { showToast('Please write a reply first.', true); return; }
 
-    let subject = `Your Consultation Request – Lifestyle Medical Spa`;
+    let subject = `Your Consultation Request – Finesse Medical Spa`;
     let body = replyText;
 
     // Extract subject line if included
