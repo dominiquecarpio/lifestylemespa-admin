@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Finesse Medical Spa — Admin</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="images/Finesse Logo.png">
+  <meta name="theme-color" content="#c9a96e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Finesse Spa">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cinzel:wght@400;500&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -2475,30 +2481,68 @@
     document.getElementById('promoModalError').style.display = 'none';
   }
 
-  function loadAIAnswers() {
-    const stored = localStorage.getItem('lms_ai_answers');
-    const answers = stored ? JSON.parse(stored) : { q1: '', q2: '', q3: '' };
-    document.getElementById('aiAnswer1').value = answers.q1 || '';
-    document.getElementById('aiAnswer2').value = answers.q2 || '';
-    document.getElementById('aiAnswer3').value = answers.q3 || '';
+  async function loadAIAnswers() {
+    try {
+      const { data, error } = await _supabase
+        .from('chat_answers')
+        .select('*')
+        .order('created_at', { ascending: true });
+      
+      if (error) throw error;
+      
+      // Map database records to form fields
+      if (data && data.length > 0) {
+        document.getElementById('aiAnswer1').value = data[0]?.answer || '';
+        document.getElementById('aiAnswer1').dataset.id = data[0]?.id || '';
+        document.getElementById('aiAnswer1').dataset.question = data[0]?.question || 'New client offer?';
+      }
+      if (data && data.length > 1) {
+        document.getElementById('aiAnswer2').value = data[1]?.answer || '';
+        document.getElementById('aiAnswer2').dataset.id = data[1]?.id || '';
+        document.getElementById('aiAnswer2').dataset.question = data[1]?.question || 'What codes are available?';
+      }
+      if (data && data.length > 2) {
+        document.getElementById('aiAnswer3').value = data[2]?.answer || '';
+        document.getElementById('aiAnswer3').dataset.id = data[2]?.id || '';
+        document.getElementById('aiAnswer3').dataset.question = data[2]?.question || 'Refer a friend?';
+      }
+    } catch (e) {
+      console.error('Error loading AI answers:', e);
+      showToast('Error loading AI answers: ' + e.message, 'error');
+    }
   }
 
-  function saveAIAnswers() {
-    const answers = {
-      q1: document.getElementById('aiAnswer1').value.trim(),
-      q2: document.getElementById('aiAnswer2').value.trim(),
-      q3: document.getElementById('aiAnswer3').value.trim()
-    };
-    localStorage.setItem('lms_ai_answers', JSON.stringify(answers));
-    syncAIAnswersWithHome();
-    showToast('AI answers saved!');
-  }
+  async function saveAIAnswers() {
+    try {
+      const updates = [
+        { id: document.getElementById('aiAnswer1').dataset.id, question: 'New client offer?', answer: document.getElementById('aiAnswer1').value.trim() },
+        { id: document.getElementById('aiAnswer2').dataset.id, question: 'What codes are available?', answer: document.getElementById('aiAnswer2').value.trim() },
+        { id: document.getElementById('aiAnswer3').dataset.id, question: 'Refer a friend?', answer: document.getElementById('aiAnswer3').value.trim() }
+      ];
 
-  function syncAIAnswersWithHome() {
-    const stored = localStorage.getItem('lms_ai_answers');
-    const answers = stored ? JSON.parse(stored) : { q1: '', q2: '', q3: '' };
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem('lms_ai_answers', JSON.stringify(answers));
+      for (const update of updates) {
+        if (update.id && update.answer) {
+          const { error } = await _supabase
+            .from('chat_answers')
+            .update({ answer: update.answer, updated_at: new Date().toISOString() })
+            .eq('id', update.id);
+          
+          if (error) throw error;
+        } else if (!update.id && update.answer) {
+          // Insert new answer if not found
+          const { error } = await _supabase
+            .from('chat_answers')
+            .insert([{ question: update.question, answer: update.answer }]);
+          
+          if (error) throw error;
+        }
+      }
+      
+      showToast('AI answers saved to database!');
+      loadAIAnswers(); // Reload to get updated IDs
+    } catch (e) {
+      console.error('Error saving AI answers:', e);
+      showToast('Error saving AI answers: ' + e.message, 'error');
     }
   }
 
