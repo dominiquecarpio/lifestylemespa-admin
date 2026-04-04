@@ -1096,6 +1096,21 @@
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1"/><path d="M4.5 9.5l5-5M9.5 9.5l-5-5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
       Promo Codes
     </a>
+    <a class="nav-item" id="navReferrals" onclick="switchTab('referrals')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="4" cy="4" r="2.5" stroke="currentColor" stroke-width="1"/><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1"/><path d="M6 5l2 4" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+      Referrals
+      <span class="nav-badge" id="referralsBadge" style="display:none">0</span>
+    </a>
+    <a class="nav-item" id="navEvents" onclick="switchTab('events')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="10" rx="1" stroke="currentColor" stroke-width="1"/><path d="M1 6h12M4 1v4M10 1v4" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+      Events & Parties
+      <span class="nav-badge" id="eventsBadge" style="display:none">0</span>
+    </a>
+    <a class="nav-item" id="navInHome" onclick="switchTab('inhome')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L1 6v7h4V9h4v4h4V6L7 1z" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/></svg>
+      In-Home / Nurse
+      <span class="nav-badge" id="inhomeBadge" style="display:none">0</span>
+    </a>
   </nav>
   <div class="sidebar-footer">
     <div class="admin-name">Administrator</div>
@@ -1575,6 +1590,174 @@
     <div id="promoModalError" style="display:none;margin-top:12px;padding:10px;background:rgba(176,91,91,.15);border:1px solid rgba(176,91,91,.3);border-radius:2px;color:var(--red);font-size:11px;text-align:center;"></div>
   </div>
 </div>
+
+<!-- ══ REFERRALS PANEL ══ -->
+<main class="main" id="referralsPanel" style="display:none;">
+  <div class="topbar">
+    <span class="topbar-title">Referrals — Refer a Friend</span>
+    <div class="topbar-actions">
+      <button class="btn-refresh" onclick="loadReferrals()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M11 2v3H8M1 10V7h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.5 4.5A4.5 4.5 0 0 1 9.5 3M10.5 7.5A4.5 4.5 0 0 1 2.5 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Refresh
+      </button>
+      <button class="btn-export" onclick="exportTableCSV('referrals')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 5l3 3 3-3M1 9v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Export CSV
+      </button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="stats-row" style="grid-template-columns:repeat(3,1fr);">
+      <div class="stat-card gold"><div class="stat-label">Total Referrals</div><div class="stat-value" id="refStatTotal">—</div><div class="stat-sub">All time</div></div>
+      <div class="stat-card amber"><div class="stat-label">Pending</div><div class="stat-value" id="refStatPending">—</div><div class="stat-sub">Awaiting redemption</div></div>
+      <div class="stat-card green"><div class="stat-label">Redeemed</div><div class="stat-value" id="refStatRedeemed">—</div><div class="stat-sub">Successful referrals</div></div>
+    </div>
+    <div class="filters-bar">
+      <div class="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <input class="search-input" id="refSearch" type="text" placeholder="Search by name or email…" oninput="filterReferrals()">
+      </div>
+      <select class="filter-select" id="refStatusFilter" onchange="filterReferrals()">
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="redeemed">Redeemed</option>
+        <option value="expired">Expired</option>
+      </select>
+      <span class="results-count" id="refCount"></span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Referrer Name</th>
+            <th>Referrer Email</th>
+            <th>Referred Email</th>
+            <th>Promo Code</th>
+            <th>Status</th>
+            <th>Redeemed At</th>
+            <th>Submitted</th>
+            <th style="text-align:right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="refTableBody"></tbody>
+      </table>
+      <div id="refStateArea"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ══ EVENTS PANEL ══ -->
+<main class="main" id="eventsPanel" style="display:none;">
+  <div class="topbar">
+    <span class="topbar-title">Events & Parties Bookings</span>
+    <div class="topbar-actions">
+      <button class="btn-refresh" onclick="loadEvents()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M11 2v3H8M1 10V7h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.5 4.5A4.5 4.5 0 0 1 9.5 3M10.5 7.5A4.5 4.5 0 0 1 2.5 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Refresh
+      </button>
+      <button class="btn-export" onclick="exportTableCSV('events')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 5l3 3 3-3M1 9v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Export CSV
+      </button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="stats-row" style="grid-template-columns:repeat(3,1fr);">
+      <div class="stat-card gold"><div class="stat-label">Total Bookings</div><div class="stat-value" id="evtStatTotal">—</div><div class="stat-sub">All time</div></div>
+      <div class="stat-card amber"><div class="stat-label">Pending</div><div class="stat-value" id="evtStatPending">—</div><div class="stat-sub">Awaiting confirmation</div></div>
+      <div class="stat-card green"><div class="stat-label">Confirmed</div><div class="stat-value" id="evtStatConfirmed">—</div><div class="stat-sub">Events set</div></div>
+    </div>
+    <div class="filters-bar">
+      <div class="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <input class="search-input" id="evtSearch" type="text" placeholder="Search by name, email, or event type…" oninput="filterEvents()">
+      </div>
+      <select class="filter-select" id="evtStatusFilter" onchange="filterEvents()">
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <span class="results-count" id="evtCount"></span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Contact</th>
+            <th>Email</th>
+            <th>Event Type</th>
+            <th>Guests</th>
+            <th>Date & Time</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Submitted</th>
+            <th style="text-align:right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="evtTableBody"></tbody>
+      </table>
+      <div id="evtStateArea"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ══ IN-HOME / TRAVELING NURSE PANEL ══ -->
+<main class="main" id="inhomePanel" style="display:none;">
+  <div class="topbar">
+    <span class="topbar-title">In-Home / Traveling Nurse Appointments</span>
+    <div class="topbar-actions">
+      <button class="btn-refresh" onclick="loadInHome()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M11 2v3H8M1 10V7h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.5 4.5A4.5 4.5 0 0 1 9.5 3M10.5 7.5A4.5 4.5 0 0 1 2.5 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Refresh
+      </button>
+      <button class="btn-export" onclick="exportTableCSV('inhome')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 5l3 3 3-3M1 9v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Export CSV
+      </button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="stats-row">
+      <div class="stat-card gold"><div class="stat-label">Total Requests</div><div class="stat-value" id="ihStatTotal">—</div><div class="stat-sub">All time</div></div>
+      <div class="stat-card amber"><div class="stat-label">Pending</div><div class="stat-value" id="ihStatPending">—</div><div class="stat-sub">Awaiting response</div></div>
+      <div class="stat-card green"><div class="stat-label">Confirmed</div><div class="stat-value" id="ihStatConfirmed">—</div><div class="stat-sub">Visits booked</div></div>
+      <div class="stat-card blue"><div class="stat-label">Completed</div><div class="stat-value" id="ihStatCompleted">—</div><div class="stat-sub">Home visits done</div></div>
+    </div>
+    <div class="filters-bar">
+      <div class="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <input class="search-input" id="ihSearch" type="text" placeholder="Search by name, email, ZIP, or treatment…" oninput="filterInHome()">
+      </div>
+      <select class="filter-select" id="ihStatusFilter" onchange="filterInHome()">
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <span class="results-count" id="ihCount"></span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Email / Phone</th>
+            <th>Address</th>
+            <th>Treatment</th>
+            <th>Preferred Date</th>
+            <th>Status</th>
+            <th>Submitted</th>
+            <th style="text-align:right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="ihTableBody"></tbody>
+      </table>
+      <div id="ihStateArea"></div>
+    </div>
+  </div>
+</main>
 
 <div class="toast" id="toast"></div>
 
@@ -2248,19 +2431,21 @@
 
   // ── Tab switching ─────────────────────────────────────────
   function switchTab(tab) {
-    const consultMain   = document.querySelector('main:not(#chatInboxPanel):not(#promoCodesPanel)');
+    const consultMain   = document.querySelector('main:not(#chatInboxPanel):not(#promoCodesPanel):not(#referralsPanel):not(#eventsPanel):not(#inhomePanel)');
     const chatMain      = document.getElementById('chatInboxPanel');
     const promoMain     = document.getElementById('promoCodesPanel');
+    const refMain       = document.getElementById('referralsPanel');
+    const evtMain       = document.getElementById('eventsPanel');
+    const ihMain        = document.getElementById('inhomePanel');
     const navC          = document.getElementById('navConsultations');
     const navChat       = document.getElementById('navChatInbox');
     const navPromo      = document.getElementById('navPromoCodes');
+    const navRef        = document.getElementById('navReferrals');
+    const navEvt        = document.getElementById('navEvents');
+    const navIH         = document.getElementById('navInHome');
 
-    consultMain.style.display = 'none';
-    chatMain.style.display = 'none';
-    promoMain.style.display = 'none';
-    navC.classList.remove('active');
-    navChat.classList.remove('active');
-    navPromo.classList.remove('active');
+    [consultMain, chatMain, promoMain, refMain, evtMain, ihMain].forEach(el => { if (el) el.style.display = 'none'; });
+    [navC, navChat, navPromo, navRef, navEvt, navIH].forEach(el => { if (el) el.classList.remove('active'); });
 
     if (tab === 'consultations') {
       consultMain.style.display = '';
@@ -2274,6 +2459,18 @@
       navPromo.classList.add('active');
       loadPromoCodesUI();
       loadAIAnswers();
+    } else if (tab === 'referrals') {
+      refMain.style.display = '';
+      navRef.classList.add('active');
+      loadReferrals();
+    } else if (tab === 'events') {
+      evtMain.style.display = '';
+      navEvt.classList.add('active');
+      loadEvents();
+    } else if (tab === 'inhome') {
+      ihMain.style.display = '';
+      navIH.classList.add('active');
+      loadInHome();
     }
   }
 
@@ -2834,11 +3031,333 @@ Do NOT include a subject line. Output only the reply message text, nothing else.
     document.getElementById('adminChatReply').focus();
   }
 
-  // Keyboard shortcuts
-  document.addEventListener('keydown', e => {
+  // ══════════════════════════════════════════════════════════
+  // REFERRALS
+  // ══════════════════════════════════════════════════════════
+  let allReferrals = [], filteredReferrals = [];
+
+  async function loadReferrals() {
+    document.getElementById('refStateArea').innerHTML = `<div class="state-loading"><div class="state-icon">◆</div><div class="state-title">Loading</div><div class="loading-dots"><span></span><span></span><span></span></div></div>`;
+    document.getElementById('refTableBody').innerHTML = '';
+    if (!configured || !_supabase) { renderReferrals([]); return; }
+    try {
+      const { data, error } = await _supabase
+        .from('referrals')
+        .select('*, promo_codes(code)')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      allReferrals = data || [];
+      const pending = allReferrals.filter(r => r.status === 'pending').length;
+      const badge = document.getElementById('referralsBadge');
+      if (pending > 0) { badge.textContent = pending; badge.style.display = ''; }
+      else badge.style.display = 'none';
+      document.getElementById('refStatTotal').textContent = allReferrals.length;
+      document.getElementById('refStatPending').textContent = pending;
+      document.getElementById('refStatRedeemed').textContent = allReferrals.filter(r => r.status === 'redeemed').length;
+      filterReferrals();
+    } catch(e) {
+      document.getElementById('refStateArea').innerHTML = `<div class="state-error"><div class="state-icon" style="color:var(--red)">✕</div><div class="state-title">Error</div><div class="state-sub">${esc(e.message)}</div></div>`;
+    }
+  }
+
+  function filterReferrals() {
+    const q = document.getElementById('refSearch').value.toLowerCase();
+    const st = document.getElementById('refStatusFilter').value;
+    filteredReferrals = allReferrals.filter(r => {
+      const matchQ = !q || (r.referrer_name||'').toLowerCase().includes(q) || (r.referrer_email||'').toLowerCase().includes(q) || (r.referred_email||'').toLowerCase().includes(q);
+      const matchSt = !st || r.status === st;
+      return matchQ && matchSt;
+    });
+    document.getElementById('refCount').textContent = `${filteredReferrals.length} result${filteredReferrals.length !== 1 ? 's' : ''}`;
+    renderReferrals(filteredReferrals);
+  }
+
+  function renderReferrals(rows) {
+    const body = document.getElementById('refTableBody');
+    const area = document.getElementById('refStateArea');
+    if (!rows.length) {
+      body.innerHTML = '';
+      area.innerHTML = `<div class="state-empty"><div class="state-icon">◇</div><div class="state-title">No Referrals</div><div class="state-sub">Referral submissions will appear here.</div></div>`;
+      return;
+    }
+    area.innerHTML = '';
+    body.innerHTML = rows.map(r => {
+      const promoCode = r.promo_codes?.code || r.promo_code_id || '—';
+      const statusClass = r.status || 'pending';
+      return `<tr>
+        <td class="td-name">${esc(r.referrer_name||'—')}</td>
+        <td class="td-email"><a href="mailto:${esc(r.referrer_email||'')}" style="color:var(--text-muted);text-decoration:none;border-bottom:1px solid rgba(201,169,110,.25);">${esc(r.referrer_email||'—')}</a></td>
+        <td class="td-email"><a href="mailto:${esc(r.referred_email||'')}" style="color:var(--text-muted);text-decoration:none;border-bottom:1px solid rgba(201,169,110,.25);">${esc(r.referred_email||'—')}</a></td>
+        <td style="font-family:monospace;font-size:11px;color:var(--gold);">${esc(promoCode)}</td>
+        <td><span class="status-pill ${statusClass}">${statusClass}</span></td>
+        <td class="td-date">${r.redeemed_at ? formatDateTime(r.redeemed_at) : '<span style="opacity:.3">—</span>'}</td>
+        <td class="td-date" style="opacity:.5">${formatDateTime(r.created_at)}</td>
+        <td>
+          <div class="td-actions">
+            <button class="action-btn" title="Mark Redeemed" onclick="updateReferralStatus('${r.id}','redeemed')">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="action-btn delete" title="Delete" onclick="deleteReferral('${r.id}')">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M4.5 9.5v-4M7.5 9.5v-4M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function updateReferralStatus(id, status) {
+    if (!configured || !_supabase) return;
+    const update = { status };
+    if (status === 'redeemed') update.redeemed_at = new Date().toISOString();
+    await _supabase.from('referrals').update(update).eq('id', id);
+    showToast(`Referral marked as ${status}`);
+    loadReferrals();
+  }
+
+  async function deleteReferral(id) {
+    if (!confirm('Delete this referral record?')) return;
+    if (configured && _supabase) await _supabase.from('referrals').delete().eq('id', id);
+    allReferrals = allReferrals.filter(r => r.id !== id);
+    filterReferrals();
+    showToast('Referral deleted');
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // EVENTS & PARTIES
+  // ══════════════════════════════════════════════════════════
+  let allEvents = [], filteredEvents = [];
+
+  async function loadEvents() {
+    document.getElementById('evtStateArea').innerHTML = `<div class="state-loading"><div class="state-icon">◆</div><div class="state-title">Loading</div><div class="loading-dots"><span></span><span></span><span></span></div></div>`;
+    document.getElementById('evtTableBody').innerHTML = '';
+    if (!configured || !_supabase) { renderEvents([]); return; }
+    try {
+      const { data, error } = await _supabase
+        .from('event_bookings')
+        .select('*, promo_codes(code)')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      allEvents = data || [];
+      const pending = allEvents.filter(e => e.status === 'pending').length;
+      const badge = document.getElementById('eventsBadge');
+      if (pending > 0) { badge.textContent = pending; badge.style.display = ''; }
+      else badge.style.display = 'none';
+      document.getElementById('evtStatTotal').textContent = allEvents.length;
+      document.getElementById('evtStatPending').textContent = pending;
+      document.getElementById('evtStatConfirmed').textContent = allEvents.filter(e => e.status === 'confirmed').length;
+      filterEvents();
+    } catch(e) {
+      document.getElementById('evtStateArea').innerHTML = `<div class="state-error"><div class="state-icon" style="color:var(--red)">✕</div><div class="state-title">Error</div><div class="state-sub">${esc(e.message)}</div></div>`;
+    }
+  }
+
+  function filterEvents() {
+    const q = document.getElementById('evtSearch').value.toLowerCase();
+    const st = document.getElementById('evtStatusFilter').value;
+    filteredEvents = allEvents.filter(e => {
+      const matchQ = !q || (e.contact_name||'').toLowerCase().includes(q) || (e.contact_email||'').toLowerCase().includes(q) || (e.event_type||'').toLowerCase().includes(q);
+      const matchSt = !st || e.status === st;
+      return matchQ && matchSt;
+    });
+    document.getElementById('evtCount').textContent = `${filteredEvents.length} result${filteredEvents.length !== 1 ? 's' : ''}`;
+    renderEvents(filteredEvents);
+  }
+
+  function renderEvents(rows) {
+    const body = document.getElementById('evtTableBody');
+    const area = document.getElementById('evtStateArea');
+    if (!rows.length) {
+      body.innerHTML = '';
+      area.innerHTML = `<div class="state-empty"><div class="state-icon">◇</div><div class="state-title">No Event Bookings</div><div class="state-sub">Party & event bookings will appear here.</div></div>`;
+      return;
+    }
+    area.innerHTML = '';
+    body.innerHTML = rows.map(e => {
+      const statusClass = e.status || 'pending';
+      return `<tr>
+        <td class="td-name">${esc(e.contact_name||'—')}</td>
+        <td class="td-email"><a href="mailto:${esc(e.contact_email||'')}" style="color:var(--text-muted);text-decoration:none;border-bottom:1px solid rgba(201,169,110,.25);">${esc(e.contact_email||'—')}</a><br><small style="opacity:.5">${esc(e.contact_phone||'')}</small></td>
+        <td><span class="treatment-pill">${esc(e.event_type||'General')}</span></td>
+        <td style="text-align:center;font-size:15px;color:var(--gold);">${e.guest_count || '—'}</td>
+        <td class="td-date">${formatDate(e.event_date)} ${e.event_time ? '<span style="opacity:.45">·</span> ' + esc(e.event_time) : ''}</td>
+        <td style="font-size:12px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(e.location||'—')}</td>
+        <td>
+          <select class="status-select ${statusClass}" onchange="updateEventStatus('${e.id}',this.value);this.className='status-select '+this.value">
+            <option value="pending" ${(e.status||'pending')==='pending'?'selected':''}>● Pending</option>
+            <option value="confirmed" ${e.status==='confirmed'?'selected':''}>● Confirmed</option>
+            <option value="cancelled" ${e.status==='cancelled'?'selected':''}>● Cancelled</option>
+          </select>
+        </td>
+        <td class="td-date" style="opacity:.5">${formatDateTime(e.created_at)}</td>
+        <td>
+          <div class="td-actions">
+            <button class="action-btn" title="Send email" onclick="window.open('mailto:${esc(e.contact_email||'')}?subject=Your+Event+Booking+–+Finesse+Medical+Spa')">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="2.5" width="10" height="7" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M1 4l5 3 5-3" stroke="currentColor" stroke-width="1.2"/></svg>
+            </button>
+            <button class="action-btn delete" title="Delete" onclick="deleteEvent('${e.id}')">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M4.5 9.5v-4M7.5 9.5v-4M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function updateEventStatus(id, status) {
+    if (!configured || !_supabase) return;
+    await _supabase.from('event_bookings').update({ status }).eq('id', id);
+    const rec = allEvents.find(e => e.id === id);
+    if (rec) rec.status = status;
+    showToast(`Event → ${status}`);
+    document.getElementById('evtStatPending').textContent = allEvents.filter(e => e.status === 'pending').length;
+    document.getElementById('evtStatConfirmed').textContent = allEvents.filter(e => e.status === 'confirmed').length;
+  }
+
+  async function deleteEvent(id) {
+    if (!confirm('Delete this event booking?')) return;
+    if (configured && _supabase) await _supabase.from('event_bookings').delete().eq('id', id);
+    allEvents = allEvents.filter(e => e.id !== id);
+    filterEvents();
+    showToast('Event booking deleted');
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // IN-HOME / TRAVELING NURSE
+  // ══════════════════════════════════════════════════════════
+  let allInHome = [], filteredInHome = [];
+
+  async function loadInHome() {
+    document.getElementById('ihStateArea').innerHTML = `<div class="state-loading"><div class="state-icon">◆</div><div class="state-title">Loading</div><div class="loading-dots"><span></span><span></span><span></span></div></div>`;
+    document.getElementById('ihTableBody').innerHTML = '';
+    if (!configured || !_supabase) { renderInHome([]); return; }
+    try {
+      const { data, error } = await _supabase
+        .from('inhome_appointments')
+        .select('*, promo_codes(code)')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      allInHome = data || [];
+      const pending = allInHome.filter(r => r.status === 'pending').length;
+      const badge = document.getElementById('inhomeBadge');
+      if (pending > 0) { badge.textContent = pending; badge.style.display = ''; }
+      else badge.style.display = 'none';
+      document.getElementById('ihStatTotal').textContent = allInHome.length;
+      document.getElementById('ihStatPending').textContent = pending;
+      document.getElementById('ihStatConfirmed').textContent = allInHome.filter(r => r.status === 'confirmed').length;
+      document.getElementById('ihStatCompleted').textContent = allInHome.filter(r => r.status === 'completed').length;
+      filterInHome();
+    } catch(e) {
+      document.getElementById('ihStateArea').innerHTML = `<div class="state-error"><div class="state-icon" style="color:var(--red)">✕</div><div class="state-title">Error</div><div class="state-sub">${esc(e.message)}</div></div>`;
+    }
+  }
+
+  function filterInHome() {
+    const q = document.getElementById('ihSearch').value.toLowerCase();
+    const st = document.getElementById('ihStatusFilter').value;
+    filteredInHome = allInHome.filter(r => {
+      const matchQ = !q || (r.patient_name||'').toLowerCase().includes(q) || (r.patient_email||'').toLowerCase().includes(q) || (r.zip||'').includes(q) || (r.treatment||'').toLowerCase().includes(q);
+      const matchSt = !st || r.status === st;
+      return matchQ && matchSt;
+    });
+    document.getElementById('ihCount').textContent = `${filteredInHome.length} result${filteredInHome.length !== 1 ? 's' : ''}`;
+    renderInHome(filteredInHome);
+  }
+
+  function renderInHome(rows) {
+    const body = document.getElementById('ihTableBody');
+    const area = document.getElementById('ihStateArea');
+    if (!rows.length) {
+      body.innerHTML = '';
+      area.innerHTML = `<div class="state-empty"><div class="state-icon">◇</div><div class="state-title">No In-Home Appointments</div><div class="state-sub">Traveling nurse requests will appear here.</div></div>`;
+      return;
+    }
+    area.innerHTML = '';
+    body.innerHTML = rows.map(r => {
+      const statusClass = r.status || 'pending';
+      const addressFull = [r.address, r.city, r.zip].filter(Boolean).join(', ');
+      return `<tr>
+        <td class="td-name">${esc(r.patient_name||'—')}</td>
+        <td class="td-email">
+          <a href="mailto:${esc(r.patient_email||'')}" style="color:var(--text-muted);text-decoration:none;border-bottom:1px solid rgba(201,169,110,.25);">${esc(r.patient_email||'—')}</a><br>
+          <small style="opacity:.5">${esc(r.patient_phone||'')}</small>
+        </td>
+        <td style="font-size:12px;max-width:160px;">
+          <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(addressFull||'—')}</div>
+        </td>
+        <td>${r.treatment ? `<span class="treatment-pill">${esc(r.treatment)}</span>` : '<span style="opacity:.3">—</span>'}</td>
+        <td class="td-date">${formatDate(r.preferred_date)} ${r.preferred_time ? '<span style="opacity:.45">·</span> ' + esc(r.preferred_time) : ''}</td>
+        <td>
+          <select class="status-select ${statusClass}" onchange="updateInHomeStatus('${r.id}',this.value);this.className='status-select '+this.value">
+            <option value="pending" ${(r.status||'pending')==='pending'?'selected':''}>● Pending</option>
+            <option value="confirmed" ${r.status==='confirmed'?'selected':''}>● Confirmed</option>
+            <option value="completed" ${r.status==='completed'?'selected':''}>● Completed</option>
+            <option value="cancelled" ${r.status==='cancelled'?'selected':''}>● Cancelled</option>
+          </select>
+        </td>
+        <td class="td-date" style="opacity:.5">${formatDateTime(r.created_at)}</td>
+        <td>
+          <div class="td-actions">
+            <button class="action-btn" title="Send email" onclick="window.open('mailto:${esc(r.patient_email||'')}?subject=Your+In-Home+Appointment+–+Finesse+Medical+Spa')">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="2.5" width="10" height="7" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M1 4l5 3 5-3" stroke="currentColor" stroke-width="1.2"/></svg>
+            </button>
+            <button class="action-btn" title="Open in Maps" onclick="window.open('https://maps.google.com/?q='+encodeURIComponent('${esc(addressFull)}'))">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="5" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 1C3.79 1 2 2.79 2 5c0 3 4 7 4 7s4-4 4-7c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="action-btn delete" title="Delete" onclick="deleteInHome('${r.id}')">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M4.5 9.5v-4M7.5 9.5v-4M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function updateInHomeStatus(id, status) {
+    if (!configured || !_supabase) return;
+    await _supabase.from('inhome_appointments').update({ status }).eq('id', id);
+    const rec = allInHome.find(r => r.id === id);
+    if (rec) rec.status = status;
+    showToast(`In-home appointment → ${status}`);
+    document.getElementById('ihStatPending').textContent = allInHome.filter(r => r.status === 'pending').length;
+    document.getElementById('ihStatConfirmed').textContent = allInHome.filter(r => r.status === 'confirmed').length;
+    document.getElementById('ihStatCompleted').textContent = allInHome.filter(r => r.status === 'completed').length;
+  }
+
+  async function deleteInHome(id) {
+    if (!confirm('Delete this in-home appointment request?')) return;
+    if (configured && _supabase) await _supabase.from('inhome_appointments').delete().eq('id', id);
+    allInHome = allInHome.filter(r => r.id !== id);
+    filterInHome();
+    showToast('In-home record deleted');
+  }
+
+  // ── Generic CSV export for any dataset ───────────────────
+  function exportTableCSV(type) {
+    let rows, filename, cols;
+    if (type === 'referrals') {
+      cols = ['referrer_name','referrer_email','referred_name','referred_email','status','redeemed_at','created_at'];
+      rows = filteredReferrals;
+      filename = 'referrals';
+    } else if (type === 'events') {
+      cols = ['contact_name','contact_email','contact_phone','event_type','guest_count','event_date','event_time','location','status','notes','created_at'];
+      rows = filteredEvents;
+      filename = 'event-bookings';
+    } else if (type === 'inhome') {
+      cols = ['patient_name','patient_email','patient_phone','address','city','zip','treatment','preferred_date','preferred_time','status','medical_notes','nurse_notes','created_at'];
+      rows = filteredInHome;
+      filename = 'inhome-appointments';
+    } else return;
+    const csv = [cols.join(','), ...rows.map(r => cols.map(c => `"${(r[c]||'').toString().replace(/"/g,'""')}"`).join(','))].join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    a.download = `${filename}-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    showToast(`Exported ${rows.length} records`);
+  }
     if (e.key === 'Escape') closeDrawer();
     if (e.key === 'Enter' && document.getElementById('loginOverlay').style.display !== 'none') doLogin();
-  });
+  ;
 
   // ── AI Suggestion System ──────────────────────────────────
 
